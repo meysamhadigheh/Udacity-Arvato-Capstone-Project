@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pickle
 # Mapping unknown values by variable:
 unknown_dict = {'CAMEO_DEU_2015': ['XX'], 'CAMEO_INTL_2015': ['XX'], 'CAMEO_DEUG_2015': ['X'], 'AGER_TYP': [-1, 0],
                 'ALTER_HH': [0], 'ARBEIT': [9], 'D19_BANKEN_ANZ_12': [0], 'D19_BANKEN_ANZ_24': [0], 'D19_BANKEN_DATUM': [10],
