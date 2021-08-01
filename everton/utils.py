@@ -255,3 +255,28 @@ info_level = {'person': ['ANREDE_KZ', 'ALTERSKATEGORIE_GROB', 'AVANT_GARDE', 'CJ
                             'PLZ8_BAUMAX', 'PLZ8_GBZ', 'PLZ8_HHZ', 'VK_ZG11', 'VK_DHT4A', 'VHN', 'VHA', 'VERDICHTUNGSRAUM',
                             'UNGLEICHENN_FLAG'],
               'community': ['ARBEIT', 'ORTSGR_KLS9', 'RELAT_AB']}
+
+# Defining CAMEO_DEU_2015 transformation:
+def transform_cameo_deu(df):
+    '''
+    It simplifies CAMEO_DEU_2015 classes according to the representation pattern presented in the comparison
+    between customers and the general population.
+    '''
+    # Creating new column:
+    feat = 'CAMEO_DEU_2015'
+    df['CAMEO_DEU_REPRESENTATION'] = [0 if df[feat].iloc[i] in ['6A', '7A', '7B', '7C', '8A', '8B', '8C', '8D', '9A', '9B',
+                                                                '9C', '9D'] \
+                                      else 1 if df[feat].iloc[i] in ['5A', '5B', '5C', '6B', '7D'] \
+                                      else 2 if df[feat].iloc[i] in ['3A', '3B', '3C', '4B', '4C', '4E', '5E', '5F', '6C',
+                                                                     '6D', '6E', '6F', '7E', '9E'] \
+                                      else 3 if df[feat].iloc[i] in ['1A', '1B', '1C', '1D', '2A', '2B', '2C', '2D', '3D',
+                                                                     '4A', '5D'] \
+                                      else np.nan for i in range(df.shape[0])]
+
+    # Transforming the column to categorical type:
+    df['CAMEO_DEU_REPRESENTATION'] = df['CAMEO_DEU_REPRESENTATION'].astype('category')
+
+    # Deliting original column:
+    df.drop(columns = [feat], inplace = True)
+
+    return df
