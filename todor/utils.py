@@ -44,7 +44,7 @@ def feature_transform(df):
     #extract year from datetime
     df['EINGEFUEGT_AM']=pd.to_datetime(df['EINGEFUEGT_AM']).dt.year
     
-    df = df.drop(['Unnamed: 0', 'LNR','D19_LETZTER_KAUF_BRANCHE', 'OST_WEST_KZ', 'CAMEO_DEU_2015'  ], axis = 1)
+    df = df.drop(['LNR','D19_LETZTER_KAUF_BRANCHE', 'OST_WEST_KZ', 'CAMEO_DEU_2015'  ], axis = 1)
     
 
     decades_dict = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 3,
@@ -97,7 +97,7 @@ def unknown_unify(df, xls):
             
     return df
 
-def predict_sub(X_train, y_train, model, X_test):
+def predict_sub(X_train, y_train, model, X_test,mailout_test):
     
     '''
     Trains the final model and exports Submission.xls file for uploading to the Kaggle competition
