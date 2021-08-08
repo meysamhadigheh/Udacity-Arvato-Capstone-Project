@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve, auc
 
 
-#categorical checker (check for object types in the dataset)
+# categorical checker (check for object types in the dataset)
 def cat_check(df):
     '''
     Checks for object dtypes in the dataframe and returns the unique values in each
@@ -21,7 +21,6 @@ def cat_check(df):
 
 
 def feature_transform(df):
-    
     '''
     Performs special feature transformation on the initial dataframe
     
@@ -29,41 +28,39 @@ def feature_transform(df):
     Returns: df:DataFrame
     
     '''
-    
-    #clean special symbols from the features
+
+    # clean special symbols from the features
     df['CAMEO_DEUG_2015'] = df['CAMEO_DEUG_2015'].replace('X', None)
     df['CAMEO_INTL_2015'] = df['CAMEO_INTL_2015'].replace('XX', None)
     df['CAMEO_DEU_2015'] = df['CAMEO_DEU_2015'].replace('XX', None)
-    
+
     df['CAMEO_DEUG_2015'] = df['CAMEO_DEUG_2015'].astype('float')
     df['CAMEO_INTL_2015'] = df['CAMEO_INTL_2015'].astype('float')
-    
-    OST_WEST_KZ = {'W':0, 'O':1}
-    
+
+    OST_WEST_KZ = {'W': 0, 'O': 1}
+
     df['OST_WEST_KZ_E'] = df.loc[:, 'OST_WEST_KZ'].map(OST_WEST_KZ)
-    #extract year from datetime
-    df['EINGEFUEGT_AM']=pd.to_datetime(df['EINGEFUEGT_AM']).dt.year
-    
-    df = df.drop(['LNR','D19_LETZTER_KAUF_BRANCHE', 'OST_WEST_KZ', 'CAMEO_DEU_2015'  ], axis = 1)
-    
+    # extract year from datetime
+    df['EINGEFUEGT_AM'] = pd.to_datetime(df['EINGEFUEGT_AM']).dt.year
+
+    df = df.drop(['LNR', 'D19_LETZTER_KAUF_BRANCHE', 'OST_WEST_KZ', 'CAMEO_DEU_2015'], axis=1)
 
     decades_dict = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 3,
-           8: 4, 9: 4, 10: 5, 11: 5, 12: 5, 13: 5, 14: 6,
-           15: 6, 0: np.nan}
+                    8: 4, 9: 4, 10: 5, 11: 5, 12: 5, 13: 5, 14: 6,
+                    15: 6, 0: np.nan}
     df['PRAEGENDE_JUGENDJAHRE_DECADE'] = df['PRAEGENDE_JUGENDJAHRE'].map(decades_dict)
     print('Creating PRAEGENDE_JUGENDJAHRE_DECADE feature')
-    
-    
+
     movement_dict = {1: 0, 2: 1, 3: 0, 4: 1, 5: 0, 6: 1, 7: 1, 8: 0,
-           9: 1, 10: 0, 11: 1, 12: 0, 13: 1, 14: 0, 15: 1, 0: np.nan}
+                     9: 1, 10: 0, 11: 1, 12: 0, 13: 1, 14: 0, 15: 1, 0: np.nan}
     df['PRAEGENDE_JUGENDJAHRE_MOVEMENT'] = df['PRAEGENDE_JUGENDJAHRE'].map(movement_dict)
-    
+
     print('Creating PRAEGENDE_JUGENDJAHRE_MOVEMENT feature')
-    
-    df.drop(['PRAEGENDE_JUGENDJAHRE'], axis = 1, inplace = True)
-   
+
+    df.drop(['PRAEGENDE_JUGENDJAHRE'], axis=1, inplace=True)
 
     return df
+
 
 def unknown_unify(df, xls):
     '''
@@ -73,32 +70,32 @@ def unknown_unify(df, xls):
     Returns: df:DataFrame
     
     '''
-    
-    #using the DIAs xls file lets save meanings that might indicate unknown values
+
+    # using the DIAs xls file lets save meanings that might indicate unknown values
     unknowns = xls['Meaning'].where(xls['Meaning'].str.contains('unknown')).value_counts().index
-    
-    #I will now create a list of all the unknown values for each attribute and replace them on my azdias and customers
+
+    # I will now create a list of all the unknown values for each attribute and replace them on my azdias and customers
     missing_unknowns = xls[xls['Meaning'].isin(unknowns)]
 
     for row in missing_unknowns.iterrows():
         missing_values = row[1]['Value']
         attribute = row[1]['Attribute']
-        
-        #dealing with columns that only exist in df
+
+        # dealing with columns that only exist in df
         if attribute not in df.columns:
             continue
-        
-        #dealing with strings or ints
-        if isinstance(missing_values,int): 
+
+        # dealing with strings or ints
+        if isinstance(missing_values, int):
             df[attribute].replace(missing_values, -1, inplace=True)
-        elif isinstance(missing_values,str):
-            eval("df[attribute].replace(["+missing_values+"], -1, inplace=True)")
+        elif isinstance(missing_values, str):
+            eval("df[attribute].replace([" + missing_values + "], -1, inplace=True)")
             df[attribute].replace(missing_values, -1, inplace=True)
-            
+
     return df
 
-def predict_sub(X_train, y_train, model, X_test,mailout_test):
-    
+
+def predict_sub(X_train, y_train, model, X_test, mailout_test):
     '''
     Trains the final model and exports Submission.xls file for uploading to the Kaggle competition
     
@@ -114,12 +111,11 @@ def predict_sub(X_train, y_train, model, X_test,mailout_test):
 
     y_sub = model.predict_proba(X_test)[:, 1]
 
-    submission = pd.DataFrame({'LNR':mailout_test['LNR'], 'RESPONSE': y_sub })
-    submission.to_csv('submission_XGB.csv', index = False)
+    submission = pd.DataFrame({'LNR': mailout_test['LNR'], 'RESPONSE': y_sub})
+    submission.to_csv('submission_XGB.csv', index=False)
 
-    
-def plot_roc(model,X, y, model_name):
-    
+
+def plot_roc(model, X, y, model_name):
     '''
     Plots ROC curve for the imputed model.
     
@@ -133,7 +129,7 @@ def plot_roc(model,X, y, model_name):
       
     '''
 
-    X_train, X_test, y_train, y_test= train_test_split(X, y, test_size = 0.2, random_state = 42, stratify = y )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
     model.fit(X_train, y_train)
     # Compute ROC curve and ROC area for each class
     fpr = dict()
@@ -145,15 +141,11 @@ def plot_roc(model,X, y, model_name):
         fpr[i], tpr[i], _ = roc_curve(y_test, y_score)
         roc_auc[i] = auc(fpr[i], tpr[i])
 
-
     lw = 2
-    ax  = sns.lineplot(x = fpr[0],y = tpr[0], lw=lw, label=model_name + '(AUC = %0.2f)' % roc_auc[0])
+    ax = sns.lineplot(x=fpr[0], y=tpr[0], lw=lw, label=model_name + '(AUC = %0.2f)' % roc_auc[0])
 
-    ax = sns.lineplot(x = [0, 1], y = [0, 1], color='navy', lw=lw, linestyle='--')
+    ax = sns.lineplot(x=[0, 1], y=[0, 1], color='navy', lw=lw, linestyle='--')
 
     ax.set(xlabel='False Positive Rate', ylabel='True Positive Rate')
 
     plt.title('ROC Curve')
-
-     
-    
