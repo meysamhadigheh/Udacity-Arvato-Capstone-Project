@@ -95,7 +95,7 @@ def unknown_unify(df, xls):
     return df
 
 
-def predict_sub(X_train, y_train, model, X_test, mailout_test):
+def predict_sub(X_train, y_train, model, X_test, mailout_test,file_name):
     '''
     Trains the final model and exports Submission.xls file for uploading to the Kaggle competition
     
@@ -112,7 +112,7 @@ def predict_sub(X_train, y_train, model, X_test, mailout_test):
     y_sub = model.predict_proba(X_test)[:, 1]
 
     submission = pd.DataFrame({'LNR': mailout_test['LNR'], 'RESPONSE': y_sub})
-    submission.to_csv('submission_XGB.csv', index=False)
+    submission.to_csv(file_name, index=False)
 
 
 def plot_roc(model, X, y, model_name):
