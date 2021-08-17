@@ -12,7 +12,7 @@
 
 
 ## Requirements <a name="requirements"></a>
-All of the requirements are provided in requirements.txt. Use: pip install -r requirements.txt
+All of the requirements are provided in requirements.txt.  Use: pip install -r requirements.txt
 
 ## Project Overview<a name="overview"></a>
 “A Customer Segmentation Report for Arvato Financial Solutions” was one of the proposed projects for the Machine Learning Engineer Nanodegree Program by the Udacity. The main objective of the project is to determine the descriptive portrait of the potential customer and are chances that a new person from the targeted mailout campaign could become a new customer.
